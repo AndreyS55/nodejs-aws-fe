@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
-import {makeStyles} from '@material-ui/core/styles';
-import Typography from "@material-ui/core/Typography";
+import React, { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
@@ -15,14 +15,14 @@ type CSVFileImportProps = {
   title: string
 };
 
-export default function CSVFileImport({url, title}: CSVFileImportProps) {
+export default function CSVFileImport({ url, title }: CSVFileImportProps) {
   const classes = useStyles();
   const [file, setFile] = useState<any>();
 
   const onFileChange = (e: any) => {
     console.log(e);
-    let files = e.target.files || e.dataTransfer.files
-    if (!files.length) return
+    let files = e.target.files || e.dataTransfer.files;
+    if (!files.length) return;
     setFile(files.item(0));
   };
 
@@ -31,27 +31,29 @@ export default function CSVFileImport({url, title}: CSVFileImportProps) {
   };
 
   const uploadFile = async (e: any) => {
-      // Get the presigned URL
-      const response = await axios({
-        method: 'GET',
-        url,
-        params: {
-          name: encodeURIComponent(file.name)
-        }
-      })
-      console.log('File to upload: ', file.name)
-      console.log('Uploading to: ', response.data)
-      const result = await fetch(response.data, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': 'text/csv'
-        }
-      })
-      console.log('Result: ', result)
-      setFile('');
-    }
-  ;
+    // Get the presigned URL
+    const response = await axios({
+      method: 'GET',
+      url,
+      params: {
+        name: encodeURIComponent(file.name),
+      },
+      headers: {
+        Authorization: `Basic ${localStorage.getItem('auth_token')}`,
+      },
+    });
+    console.log('File to upload: ', file.name);
+    console.log('Uploading to: ', response.data);
+    const result = await fetch(response.data, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': 'text/csv',
+      },
+    });
+    console.log('Result: ', result);
+    setFile('');
+  };
 
   return (
     <div className={classes.content}>
@@ -59,7 +61,7 @@ export default function CSVFileImport({url, title}: CSVFileImportProps) {
         {title}
       </Typography>
       {!file ? (
-          <input type="file" onChange={onFileChange}/>
+        <input type="file" onChange={onFileChange}/>
       ) : (
         <div>
           <button onClick={removeFile}>Remove file</button>
