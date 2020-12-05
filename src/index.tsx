@@ -13,12 +13,19 @@ axios.interceptors.response.use(
     return response;
   },
   function(error) {
-    // if (error.response.status === 400) {
-    //   alert(error.response.data?.data);
-    // }
+    const { status, data } = error.response;
+    if (status === 401 || status === 403 || status === 500) {
+      alert(`
+        Status code: ${status}
+        Error message: ${data?.message}
+      `);
+    }
     return Promise.reject(error.response);
   }
 );
+
+const encodedCreds = Buffer.from('AndreyS55:TEST_PASSWORD').toString('base64');
+localStorage.setItem('auth_token', encodedCreds);
 
 ReactDOM.render(
   <React.StrictMode>
